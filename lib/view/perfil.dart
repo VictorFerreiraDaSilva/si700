@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'editar_perfil.dart';
 import 'inicio.dart';
 
 class Perfil extends StatefulWidget {
@@ -10,6 +11,16 @@ class Perfil extends StatefulWidget {
 }
 
 class _PerfilState extends State<Perfil> {
+  void _navigateToEdit(String field, String value) {
+    final userId = widget.user['userId'];
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditProfile(field: field, value: value, userId: userId),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = widget.user;
@@ -29,9 +40,8 @@ class _PerfilState extends State<Perfil> {
               children: <Widget>[
                 CircleAvatar(
                   radius: 50,
-                  // backgroundImage: NetworkImage(user['fotoPerfilUrl']),
                   backgroundColor: Colors.cyan.shade800,
-                  child: Text(user['nome'][0]), // Primeira letra do nome
+                  child: Text(user['nome']?.substring(0, 1) ?? 'N'), // Primeira letra do nome
                 ),
                 SizedBox(height: 8),
                 Text('Editar foto de perfil', style: TextStyle(color: Colors.blue)),
@@ -41,27 +51,21 @@ class _PerfilState extends State<Perfil> {
           Divider(),
           ListTile(
             title: Text('Nome'),
-            subtitle: Text(user['nome']),
+            subtitle: Text(user['nome'] ?? ''),
             trailing: Icon(Icons.arrow_forward_ios),
-            onTap: () {
-              // Navegue para a tela de edição de nome
-            },
+            onTap: () => _navigateToEdit('nome', user['nome'] ?? ''),
           ),
           ListTile(
             title: Text('Usuário'),
-            subtitle: Text('@${user['usuario']}'),
+            subtitle: Text('@${user['usuario'] ?? ''}'),
             trailing: Icon(Icons.arrow_forward_ios),
-            onTap: () {
-              // Navegue para a tela de edição de usuário
-            },
+            onTap: () => _navigateToEdit('usuario', user['usuario'] ?? ''),
           ),
           ListTile(
             title: Text('Email'),
-            subtitle: Text(user['email']),
+            subtitle: Text(user['email'] ?? ''),
             trailing: Icon(Icons.arrow_forward_ios),
-            onTap: () {
-              // Navegue para a tela de edição de e-mail
-            },
+            onTap: () => _navigateToEdit('email', user['email'] ?? ''),
           ),
           ListTile(
             title: Text('Treinos Cadastrados'),

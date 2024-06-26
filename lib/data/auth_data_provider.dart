@@ -24,7 +24,13 @@ class AuthDataProvider {
       final response = await dio.get(
         'https://si700-177950-default-rtdb.firebaseio.com/users/$userId.json',
       );
-      return response.data;
+
+      if (response.data != null) {
+        final data = response.data as Map<String, dynamic>;
+        data['userId'] = userId;
+        return data;
+      }
+      return null;
     } catch (e) {
       print('Erro ao obter usuário: $e');
       return null;
@@ -33,8 +39,8 @@ class AuthDataProvider {
 
   Future<Map<String, dynamic>?> login(String email, String password) async {
     try {
-      final userId = email.hashCode.toString();
-      final response = await getUser(userId);
+      final emailHash = email.hashCode.toString();
+      final response = await getUser(emailHash);
       if (response != null) {
         final storedPassword = response['senha'];
         final inputPasswordHash = md5.convert(utf8.encode(password)).toString();
@@ -46,6 +52,18 @@ class AuthDataProvider {
     } catch (e) {
       print('Erro ao fazer login: $e');
       return null;
+    }
+  }
+
+  Future<void> updateUserField(String userId, String field, String newValue) async {
+    try {
+      await dio.patch(
+        'https://si700-177950-default-rtdb.firebaseio.com/users/$userId.json',
+        data: {field.toLowerCase(): newValue},
+      );
+    } catch (e) {
+      print('Erro ao atualizar campo do usuário: $e');
+      throw e;
     }
   }
 }

@@ -33,6 +33,17 @@ class AuthLogin extends AuthEvent {
 
 class AuthLogout extends AuthEvent {}
 
+class UpdateUserField extends AuthEvent {
+  final String userId;
+  final String field;
+  final String newValue;
+
+  UpdateUserField(this.userId, this.field, this.newValue);
+
+  @override
+  List<Object?> get props => [userId, field, newValue];
+}
+
 // Estados
 abstract class AuthState extends Equatable {
   @override
@@ -72,6 +83,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         await authRepository.register(event.userId, event.email, event.nome, event.usuario, event.senha);
         final user = await authRepository.getUser(event.userId);
         if (user != null) {
+          user['userId'] = event.userId; // Adicionar userId ao mapa de usuário
           emit(AuthAuthenticated(user: user));
         } else {
           emit(AuthError(message: 'Erro ao registrar'));
@@ -84,11 +96,29 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthLogin>((event, emit) async {
       emit(AuthLoading());
       try {
+        final emailHash = event.email.hashCode.toString();
         final user = await authRepository.login(event.email, event.password);
         if (user != null) {
+          user['userId'] = emailHash; // Adicionar userId ao mapa de usuário
           emit(AuthAuthenticated(user: user));
         } else {
           emit(AuthError(message: 'Email ou senha incorretos'));
+        }
+      } catch (e) {
+        emit(AuthError(message: e.toString()));
+      }
+    });
+
+    on<UpdateUserField>((event, emit) async {
+      emit(AuthLoading());
+      try {
+        await authRepository.updateUserField(event.userId, event.field, event.newValue);
+        final user = await authRepository.getUser(event.userId);
+        if (user != null) {
+          user['userId'] = event.userId; // Adicionar userId ao mapa de usuário
+          emit(AuthAuthenticated(user: user));
+        } else {
+          emit(AuthError(message: 'Erro ao atualizar dados'));
         }
       } catch (e) {
         emit(AuthError(message: e.toString()));

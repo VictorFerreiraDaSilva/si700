@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/auth_bloc.dart';
 
-class EditarPerfil extends StatefulWidget {
+class EditProfile extends StatefulWidget {
   final String field;
   final String value;
   final String userId;
 
-  const EditarPerfil({required this.field, required this.value, required this.userId, super.key});
+  const EditProfile({required this.field, required this.value, required this.userId, super.key});
 
   @override
-  _EditarPerfilState createState() => _EditarPerfilState();
+  _EditProfileState createState() => _EditProfileState();
 }
 
-class _EditarPerfilState extends State<EditarPerfil> {
+class _EditProfileState extends State<EditProfile> {
   late TextEditingController _controller;
 
   @override
