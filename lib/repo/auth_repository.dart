@@ -37,4 +37,8 @@ class AuthRepository {
   Future<List<String>> getNotes(String userId) async {
     return await authDataProvider.getNotes(userId);
   }
+
+  Future<Map<String, dynamic>?> getCurrentUser(String userId) async {
+    return await authDataProvider.getUser(userId);
+  }
 }

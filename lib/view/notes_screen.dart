@@ -32,58 +32,73 @@ class _NotesScreenState extends State<NotesScreen> {
     context.read<AuthBloc>().add(RemoveNote(widget.userId, note));
   }
 
+  void _onBackButtonPressed() {
+    Navigator.pop(context);
+    context.read<AuthBloc>().add(AuthUserUpdated(userId: widget.userId));
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Anotações'),
-      ),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            child: BlocBuilder<AuthBloc, AuthState>(
-              builder: (context, state) {
-                if (state is AuthNotesLoaded) {
-                  return ListView.builder(
-                    itemCount: state.notes.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(state.notes[index]),
-                        trailing: IconButton(
-                          icon: Icon(Icons.delete, color: Colors.red),
-                          onPressed: () => _removeNote(state.notes[index]),
-                        ),
-                      );
-                    },
-                  );
-                } else if (state is AuthLoading) {
-                  return Center(child: CircularProgressIndicator());
-                } else {
-                  return Center(child: Text('Erro ao carregar anotações'));
-                }
-              },
-            ),
+    return WillPopScope(
+      onWillPop: () async {
+        _onBackButtonPressed();
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Anotações'),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: _onBackButtonPressed,
           ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: <Widget>[
-                Expanded(
-                  child: TextField(
-                    controller: _noteController,
-                    decoration: InputDecoration(
-                      labelText: 'Nova anotação',
+        ),
+        body: Column(
+          children: <Widget>[
+            Expanded(
+              child: BlocBuilder<AuthBloc, AuthState>(
+                builder: (context, state) {
+                  if (state is AuthNotesLoaded) {
+                    return ListView.builder(
+                      itemCount: state.notes.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text(state.notes[index]),
+                          trailing: IconButton(
+                            icon: Icon(Icons.delete, color: Colors.red),
+                            onPressed: () => _removeNote(state.notes[index]),
+                          ),
+                        );
+                      },
+                    );
+                  } else if (state is AuthLoading) {
+                    return Center(child: CircularProgressIndicator());
+                  } else {
+                    return Center(child: Text('Erro ao carregar anotações'));
+                  }
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: TextField(
+                      controller: _noteController,
+                      decoration: InputDecoration(
+                        labelText: 'Nova anotação',
+                      ),
                     ),
                   ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.add),
-                  onPressed: _addNote,
-                ),
-              ],
+                  IconButton(
+                    icon: Icon(Icons.add),
+                    onPressed: _addNote,
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -73,6 +73,15 @@ class GetNotes extends AuthEvent {
   List<Object?> get props => [userId];
 }
 
+class AuthUserUpdated extends AuthEvent {
+  final String userId;
+
+  AuthUserUpdated({required this.userId});
+
+  @override
+  List<Object?> get props => [userId];
+}
+
 // Estados
 abstract class AuthState extends Equatable {
   @override
@@ -197,6 +206,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     on<AuthLogout>((event, emit) async {
       emit(AuthInitial());
+    });
+
+    on<AuthUserUpdated>((event, emit) async {
+      emit(AuthLoading());
+      try {
+        final user = await authRepository.getUser(event.userId);
+        if (user != null) {
+          user['userId'] = event.userId; // Adicionar userId ao mapa de usuário
+          emit(AuthAuthenticated(user: user));
+        } else {
+          emit(AuthError(message: 'Erro ao atualizar dados'));
+        }
+      } catch (e) {
+        emit(AuthError(message: e.toString()));
+      }
     });
   }
 }
