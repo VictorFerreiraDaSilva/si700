@@ -9,26 +9,48 @@ import 'package:firebase_core/firebase_core.dart';
 import 'bloc/auth_bloc.dart';
 import 'data/auth_data_provider.dart';
 import 'repo/auth_repository.dart';
+import 'bloc/exercicio_bloc.dart';
+import 'data/exercicio_data_provider.dart';
+import 'repo/exercicio_repository.dart';
 
 void main() {
   final treinoDataProvider = TreinoDataProvider(dio: Dio());
   final treinoRepository = TreinoRepository(dataProvider: treinoDataProvider);
+
+   final Dio dio = Dio();
+  final ExercicioDataProvider exercicioDataProvider = ExercicioDataProvider(dio: dio);
+  final ExercicioRepository exercicioRepository = ExercicioRepository(exercicioDataProvider: exercicioDataProvider);
+
+
   runApp(
-    MultiBlocProvider(
+    MultiRepositoryProvider(
       providers: [
-        BlocProvider(
-          create: (context) => TreinoBloc(treinoRepository: treinoRepository),
-        ),
-        BlocProvider<AuthBloc>(
-          create: (context) => AuthBloc(
-            authRepository: AuthRepository(
-              authDataProvider: AuthDataProvider(dio: Dio()),
-            ),
-          ),
+        RepositoryProvider<ExercicioRepository>(
+          create: (context) => exercicioRepository,
         ),
       ],
-      child: MyApp(),
-    ),
+      child:
+      MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => TreinoBloc(treinoRepository: treinoRepository),
+          ),
+          BlocProvider<AuthBloc>(
+            create: (context) => AuthBloc(
+              authRepository: AuthRepository(
+                authDataProvider: AuthDataProvider(dio: Dio()),
+              ),
+            ),
+          ),
+          BlocProvider<ExercicioBloc>(
+              create: (context) => ExercicioBloc(
+                exercicioRepository: context.read<ExercicioRepository>(),
+              ),
+            ),
+        ],
+        child: MyApp(),
+      ),
+    )
   );
 }
 

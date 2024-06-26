@@ -30,6 +30,10 @@ class AuthRepository {
     await authDataProvider.addNote(userId, note);
   }
 
+  Future<void> removeNote(String userId, String note) async {
+    await authDataProvider.removeNote(userId, note);
+  }
+
   Future<List<String>> getNotes(String userId) async {
     return await authDataProvider.getNotes(userId);
   }

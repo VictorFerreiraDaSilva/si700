@@ -28,6 +28,10 @@ class _NotesScreenState extends State<NotesScreen> {
     }
   }
 
+  void _removeNote(String note) {
+    context.read<AuthBloc>().add(RemoveNote(widget.userId, note));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,6 +49,10 @@ class _NotesScreenState extends State<NotesScreen> {
                     itemBuilder: (context, index) {
                       return ListTile(
                         title: Text(state.notes[index]),
+                        trailing: IconButton(
+                          icon: Icon(Icons.delete, color: Colors.red),
+                          onPressed: () => _removeNote(state.notes[index]),
+                        ),
                       );
                     },
                   );

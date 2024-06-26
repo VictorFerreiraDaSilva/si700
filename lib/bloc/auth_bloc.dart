@@ -54,6 +54,16 @@ class AddNote extends AuthEvent {
   List<Object?> get props => [userId, note];
 }
 
+class RemoveNote extends AuthEvent {
+  final String userId;
+  final String note;
+
+  RemoveNote(this.userId, this.note);
+
+  @override
+  List<Object?> get props => [userId, note];
+}
+
 class GetNotes extends AuthEvent {
   final String userId;
 
@@ -157,6 +167,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthLoading());
       try {
         await authRepository.addNote(event.userId, event.note);
+        final notes = await authRepository.getNotes(event.userId);
+        emit(AuthNotesLoaded(notes: notes));
+      } catch (e) {
+        emit(AuthError(message: e.toString()));
+      }
+    });
+
+    on<RemoveNote>((event, emit) async {
+      emit(AuthLoading());
+      try {
+        await authRepository.removeNote(event.userId, event.note);
         final notes = await authRepository.getNotes(event.userId);
         emit(AuthNotesLoaded(notes: notes));
       } catch (e) {

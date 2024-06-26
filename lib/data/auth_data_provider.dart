@@ -91,6 +91,28 @@ class AuthDataProvider {
     }
   }
 
+  Future<void> removeNote(String userId, String note) async {
+    try {
+      final response = await dio.get(
+        'https://si700-177950-default-rtdb.firebaseio.com/users/$userId/notes.json',
+      );
+
+      if (response.data != null) {
+        List<String> notes = List<String>.from(response.data);
+        notes.remove(note);
+
+        await dio.put(
+          'https://si700-177950-default-rtdb.firebaseio.com/users/$userId/notes.json',
+          data: notes,
+          options: Options(headers: {'Content-Type': 'application/json'}),
+        );
+      }
+    } catch (e) {
+      print('Erro ao remover anotação: $e');
+      throw e;
+    }
+  }
+
   Future<List<String>> getNotes(String userId) async {
     try {
       final response = await dio.get(
