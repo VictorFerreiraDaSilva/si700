@@ -73,15 +73,6 @@ class _PerfilState extends State<Perfil> {
                 ListTile(
                   title: Text('Email'),
                   subtitle: Text(user['email'] ?? ''),
-                  trailing: Icon(Icons.arrow_forward_ios),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => EditProfile(field: 'email', value: user['email'] ?? '', userId: user['userId']),
-                      ),
-                    );
-                  },
                 ),
                 ListTile(
                   title: Text('Treinos Cadastrados'),
