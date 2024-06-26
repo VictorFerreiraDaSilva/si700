@@ -44,6 +44,25 @@ class UpdateUserField extends AuthEvent {
   List<Object?> get props => [userId, field, newValue];
 }
 
+class AddNote extends AuthEvent {
+  final String userId;
+  final String note;
+
+  AddNote(this.userId, this.note);
+
+  @override
+  List<Object?> get props => [userId, note];
+}
+
+class GetNotes extends AuthEvent {
+  final String userId;
+
+  GetNotes(this.userId);
+
+  @override
+  List<Object?> get props => [userId];
+}
+
 // Estados
 abstract class AuthState extends Equatable {
   @override
@@ -61,6 +80,15 @@ class AuthAuthenticated extends AuthState {
 
   @override
   List<Object?> get props => [user];
+}
+
+class AuthNotesLoaded extends AuthState {
+  final List<String> notes;
+
+  AuthNotesLoaded({required this.notes});
+
+  @override
+  List<Object?> get props => [notes];
 }
 
 class AuthError extends AuthState {
@@ -125,9 +153,29 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     });
 
+    on<AddNote>((event, emit) async {
+      emit(AuthLoading());
+      try {
+        await authRepository.addNote(event.userId, event.note);
+        final notes = await authRepository.getNotes(event.userId);
+        emit(AuthNotesLoaded(notes: notes));
+      } catch (e) {
+        emit(AuthError(message: e.toString()));
+      }
+    });
+
+    on<GetNotes>((event, emit) async {
+      emit(AuthLoading());
+      try {
+        final notes = await authRepository.getNotes(event.userId);
+        emit(AuthNotesLoaded(notes: notes));
+      } catch (e) {
+        emit(AuthError(message: e.toString()));
+      }
+    });
+
     on<AuthLogout>((event, emit) async {
       emit(AuthInitial());
     });
   }
 }
-  

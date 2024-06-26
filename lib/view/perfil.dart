@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/auth_bloc.dart';
 import 'editar_perfil.dart';
+import 'notes_screen.dart';
 import 'inicio.dart';
 
 class Perfil extends StatefulWidget {
@@ -97,7 +98,12 @@ class _PerfilState extends State<Perfil> {
                   subtitle: Text('Anotações do usuário sobre suas metas ou observações gerais.'),
                   trailing: Icon(Icons.arrow_forward_ios),
                   onTap: () {
-                    // Navegue para a tela de anotações
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NotesScreen(userId: user['userId']),
+                      ),
+                    );
                   },
                 ),
                 Padding(

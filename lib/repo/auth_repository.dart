@@ -14,8 +14,8 @@ class AuthRepository {
     });
   }
 
-  Future<Map<String, dynamic>?> getUser(String emailHash) async {
-    return await authDataProvider.getUser(emailHash);
+  Future<Map<String, dynamic>?> getUser(String userId) async {
+    return await authDataProvider.getUser(userId);
   }
 
   Future<Map<String, dynamic>?> login(String email, String password) async {
@@ -24,5 +24,13 @@ class AuthRepository {
 
   Future<void> updateUserField(String userId, String field, String newValue) async {
     await authDataProvider.updateUserField(userId, field, newValue);
+  }
+
+  Future<void> addNote(String userId, String note) async {
+    await authDataProvider.addNote(userId, note);
+  }
+
+  Future<List<String>> getNotes(String userId) async {
+    return await authDataProvider.getNotes(userId);
   }
 }

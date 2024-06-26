@@ -66,4 +66,45 @@ class AuthDataProvider {
       throw e;
     }
   }
+
+  Future<void> addNote(String userId, String note) async {
+    try {
+      final response = await dio.get(
+        'https://si700-177950-default-rtdb.firebaseio.com/users/$userId/notes.json',
+      );
+
+      List<String> notes = [];
+      if (response.data != null) {
+        notes = List<String>.from(response.data);
+      }
+
+      notes.add(note);
+
+      await dio.put(
+        'https://si700-177950-default-rtdb.firebaseio.com/users/$userId/notes.json',
+        data: notes,
+        options: Options(headers: {'Content-Type': 'application/json'}),
+      );
+    } catch (e) {
+      print('Erro ao adicionar anotação: $e');
+      throw e;
+    }
+  }
+
+  Future<List<String>> getNotes(String userId) async {
+    try {
+      final response = await dio.get(
+        'https://si700-177950-default-rtdb.firebaseio.com/users/$userId/notes.json',
+      );
+
+      if (response.data != null) {
+        return List<String>.from(response.data);
+      }
+
+      return [];
+    } catch (e) {
+      print('Erro ao obter anotações: $e');
+      throw e;
+    }
+  }
 }
